@@ -1,0 +1,58 @@
+# Uniform Cost Search (UCS)
+
+import heapq
+
+def uniform_cost_search(graph, start, goal):
+    # Priority queue: (cost, current_node, path)
+    priority_queue = []
+    heapq.heappush(priority_queue, (0, start, [start]))
+
+    visited = {}
+
+    print("UCS Traversal:")
+
+    while priority_queue:
+        cost, node, path = heapq.heappop(priority_queue)
+
+        print(f"Visiting Node: {node} with Cost: {cost}")
+
+        # Goal check
+        if node == goal:
+            print("\nGoal Found!")
+            return cost, path
+
+        # Skip if already visited with lower cost
+        if node in visited and visited[node] <= cost:
+            continue
+
+        visited[node] = cost
+
+        # Explore neighbors
+        for neighbor, weight in graph[node]:
+            heapq.heappush(
+                priority_queue,
+                (cost + weight, neighbor, path + [neighbor])
+            )
+
+    return float("inf"), []
+
+# ---------------- Graph ----------------
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('D', 2), ('E', 5)],
+    'C': [('F', 3)],
+    'D': [('G', 1)],
+    'E': [('G', 2)],
+    'F': [('G', 2)],
+    'G': []
+}
+
+# ---------------- Main ----------------
+if __name__ == "__main__":
+    start = 'A'
+    goal = 'G'
+
+    cost, path = uniform_cost_search(graph, start, goal)
+
+    print("\nMinimum Cost:", cost)
+    print("Optimal Path:", " -> ".join(path))
