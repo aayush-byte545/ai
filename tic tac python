@@ -1,0 +1,90 @@
+# Rule-Based Tic Tac Toe AI
+
+board = [' ' for _ in range(9)]
+
+# Print board
+def print_board():
+    print("\n")
+    for i in range(3):
+        print(board[3*i], "|", board[3*i+1], "|", board[3*i+2])
+        if i < 2:
+            print("--+---+--")
+    print("\n")
+
+# Check winner
+def check_winner(b, player):
+    win_pos = [(0,1,2),(3,4,5),(6,7,8),
+               (0,3,6),(1,4,7),(2,5,8),
+               (0,4,8),(2,4,6)]
+    return any(b[a]==b[b1]==b[c]==player for a,b1,c in win_pos)
+
+# Get empty positions
+def empty_positions():
+    return [i for i in range(9) if board[i] == ' ']
+
+# AI Move
+def ai_move():
+    # 1. Win if possible
+    for i in empty_positions():
+        board[i] = 'O'
+        if check_winner(board, 'O'):
+            return
+        board[i] = ' '
+
+    # 2. Block opponent
+    for i in empty_positions():
+        board[i] = 'X'
+        if check_winner(board, 'X'):
+            board[i] = 'O'
+            return
+        board[i] = ' '
+
+    # 3. Take center
+    if board[4] == ' ':
+        board[4] = 'O'
+        return
+
+    # 4. Take corner
+    for i in [0,2,6,8]:
+        if board[i] == ' ':
+            board[i] = 'O'
+            return
+
+    # 5. Take any remaining
+    for i in empty_positions():
+        board[i] = 'O'
+        return
+
+# Main Game
+def play():
+    print("Positions: 0-8")
+    print_board()
+
+    for _ in range(9):
+        # Player move
+        move = int(input("Enter position (0-8): "))
+        if board[move] != ' ':
+            print("Invalid move!")
+            continue
+
+        board[move] = 'X'
+
+        if check_winner(board, 'X'):
+            print_board()
+            print("You win!")
+            return
+
+        # AI move
+        ai_move()
+
+        if check_winner(board, 'O'):
+            print_board()
+            print("AI wins!")
+            return
+
+        print_board()
+
+    print("It's a draw!")
+
+# Run game
+play()
