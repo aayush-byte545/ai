@@ -1,0 +1,74 @@
+
+# A* Search Algorithm
+
+import heapq
+
+# Graph: node -> [(neighbor, cost)]
+graph = {
+    'S': [('A', 4), ('B', 10), ('C', 11)],
+    'A': [('B', 8), ('D', 5)],
+    'B': [('D', 15)],
+    'C': [('D', 8), ('F', 2), ('E', 20)],
+    'D': [('F', 1), ('I', 20), ('H', 16)],
+    'E': [('G', 19)],
+    'F': [('G', 13)],
+    'H': [('I', 1), ('J', 2)],
+    'I': [('J', 5), ('K', 13), ('G', 5)],
+    'J': [('K', 7)],
+    'K': [('G', 16)],
+    'G': []
+}
+
+# Heuristic values h(n)
+heuristic = {
+    'S': 7, 'A': 8, 'B': 6, 'C': 5, 'D': 5,
+    'E': 3, 'F': 3, 'G': 0, 'H': 7,
+    'I': 4, 'J': 5, 'K': 3
+}
+
+def a_star(start, goal):
+    # Priority queue: (f = g+h, g, node, path)
+    open_list = []
+    heapq.heappush(open_list, (heuristic[start], 0, start, [start]))
+
+    closed_set = set()
+
+    print("A* Traversal:")
+
+    while open_list:
+        f, g, current, path = heapq.heappop(open_list)
+
+        print(f"Visiting Node: {current} | g={g}, h={heuristic[current]}, f={f}")
+
+        # Goal check
+        if current == goal:
+            print("\nGoal Found!")
+            return path, g
+
+        if current in closed_set:
+            continue
+
+        closed_set.add(current)
+
+        # Explore neighbors
+        for neighbor, cost in graph[current]:
+            if neighbor not in closed_set:
+                new_g = g + cost
+                new_f = new_g + heuristic[neighbor]
+
+                heapq.heappush(
+                    open_list,
+                    (new_f, new_g, neighbor, path + [neighbor])
+                )
+
+    return None, float('inf')
+
+# ---------------- Main ----------------
+if __name__ == "__main__":
+    start = 'S'
+    goal = 'G'
+
+    path, cost = a_star(start, goal)
+
+    print("\nOptimal Path:", " -> ".join(path)) # type: ignore
+    print("Total Cost:", cost)
